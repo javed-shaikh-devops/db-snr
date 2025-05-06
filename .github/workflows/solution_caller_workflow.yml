@@ -1,0 +1,22 @@
+name: Call Terraform Executor (WIF)
+
+on:
+#  push:
+#    branches:
+#      - main
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  call-terraform:
+    uses: ./.github/workflows/solution_reusable_workflow.yml
+    with:
+      working_directory: ./GHA-S-1/terraform
+      command: plan
+    secrets:
+      gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      gcp_service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}

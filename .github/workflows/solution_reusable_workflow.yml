@@ -1,0 +1,62 @@
+name: Terraform Executor (WIF)
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        required: true
+        type: string
+        description: "Terraform command to execute (plan or apply)"
+      working_directory:
+        required: true
+        type: string
+        description: "Directory containing Terraform configuration"
+    secrets:
+      gcp_workload_identity_provider:
+        required: true
+      gcp_service_account_email:
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Needed for WIF (OIDC token from GitHub)
+      contents: read
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud using WIF
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token   # (Important: WIF usually uses access tokens)
+          workload_identity_provider: ${{ secrets.gcp_workload_identity_provider }}
+          service_account: ${{ secrets.gcp_service_account_email }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Check Current Directory
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          echo "Current folder: $(pwd)"
+          echo "Files:"
+          ls -la
+
+      - name: Terraform Init and Plan/Apply
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          terraform init -input=false
+          if [[ "${{ inputs.command }}" == "apply" ]]; then
+            terraform apply -input=false -auto-approve
+          else
+            terraform plan -input=false
+          fi
+        
+
