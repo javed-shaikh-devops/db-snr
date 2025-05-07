@@ -53,7 +53,7 @@ jobs:
           export TF_LOG_PATH=terraform-debug.log  # Optional: Save logs to a fi
           pwd
           ls -ltr
-          terraform plan '-var="credentials_file=${{ github.workspace }}/credentials.json"' '-var="project_id=${{ secrets.GCP_PROJECT_ID }}"' '-out=tfplan'
+          terraform plan '-var="credentials_file=credentials.json"' '-var="project_id=${{ secrets.GCP_PROJECT_ID }}"' '-out=tfplan'
           
 
       - name: Terraform Apply - Create GKE Autopilot Cluster
