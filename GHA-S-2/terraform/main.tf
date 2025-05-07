@@ -12,11 +12,7 @@ terraform {
 provider "google" {
   project     = var.project_id
   region      = var.region
-<<<<<<< HEAD
   credentials = file(var.credentials_file)
-=======
-  credentials = var.credentials_json
->>>>>>> f72e42a6fc05a36898c9371458b6f906e6a7e6e8
 }
 
 resource "google_container_cluster" "gke_autopilot_cluster" {
