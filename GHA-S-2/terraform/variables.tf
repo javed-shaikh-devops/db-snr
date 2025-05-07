@@ -15,7 +15,7 @@ variable "cluster_name" {
   default     = "dynamic-cluster"
 }
 
-variable "credentials_json" {
+variable "credentials_file" {
   description = "GCP Service Account Key JSON"
   type        = string
 }
