@@ -87,3 +87,7 @@ jobs:
         if: always()  # important: destroy even if kubectl step fails
         run: |
           terraform destroy -auto-approve -var="project_id=${{ secrets.GCP_PROJECT_ID }}" -var="credentials_file=./credentials.json"
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f ./credentials.json
