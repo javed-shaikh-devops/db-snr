@@ -61,10 +61,6 @@ jobs:
         run: |
           terraform apply -auto-approve tfplan
 
-      - name: Set gcloud to use GKE auth plugin
-        run: |
-          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
-
       - name: Extract Terraform Outputs
         id: tf_outputs
         run: |
@@ -72,17 +68,22 @@ jobs:
           echo "GKE_CLUSTER_REGION=$(terraform output -raw gke_cluster_region)" >> $GITHUB_ENV
           echo "GCP_PROJECT_ID=$(terraform output -raw project_id)" >> $GITHUB_ENV
 
+      - name: Set gcloud to use GKE auth plugin
+        run: |
+          echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
+
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          echo "Installing gke-gcloud-auth-plugin..."
+          #sudo apt-get update
+          #sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+          gcloud components install gke-gcloud-auth-plugin --quiet
+
       - name: Configure kubectl context
         run: |
           gcloud container clusters get-credentials $GKE_CLUSTER_NAME \
             --region $GKE_CLUSTER_REGION \
             --project ${{ secrets.GCP_PROJECT_ID }}
-
-      - name: Install gke-gcloud-auth-plugin
-        run: |
-          echo "Installing gke-gcloud-auth-plugin..."
-          sudo apt-get update
-          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
 
       - name: Verify Cluster - Get Pods
         run: |
